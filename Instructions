@@ -1,0 +1,49 @@
+Download the SAS program for the PMCA v 3.2 here:
+https://www.kpwashingtonresearch.org/our-research/our-scientists/rita-mangione-smith-mdmph/measurement-tools-research-dr-rita-mangione-smith
+At the end of line 1039 add “anyprogressive2”
+At the end of line 1042 (before the semicolon) add “progressive2h”
+At the end of line 1054 add “anyprogressive2 = 0;”
+At the end of line 1059 ass “progressive2h = 0;”
+Replace line 1086 with:
+“if progressive = 1 then do; anyprogressive = 1; anyprogressive2 + 1; end;”
+Replace line 1087 with
+ “if malign = 1 then do; anymalign = 1; anymalign2 +1; end;”
+In lines 1144 – 1161 replace each instance of “>=2” with “>=4”
+In line 1162 and 1163 (which should be blank) add these two lines of code:
+ “if anyprogressive2 >=2 then progressive2h=1;”
+ “if anymalign2 >=2 then malign2h=1;”
+In line 1171 replace “anyprogressive” with “progressive2h”
+In line 1172 replace “anymalign” with “malign2h”
+To create a flag for the 3+ version of PMCA do all of the above then:
+In line 1031 after the word “cond_more” add “ pmca_con_3”
+Add a line before line 1177 and in that newly created line put this code:
+ “if scount_more ge 3 then pmca_con_3+=1; else pmca_con_3+=0;”
+
+
+
+
+Download the SAS program for the CCC-CS version 2 here:
+https://www.research.chop.edu/feudtner-laboratory/resources
+This algorithm needs to run on a date-level dataset, where each row contains all procedure and
+diagnosis codes from a given date. The dataset also needs to be sorted by individual ID. All line
+numbers described below are lines of the original CCC-CS version 2 program.
+In line 35, add “idvar” as one of the input variables
+After line 38 on line 39, add “by &idvar;”
+After line 38, add a new line: “retain neuromusc_ccc cvd_ccc respiratory_ccc renal_ccc GI_ccc
+hemato_immu_ccc metabolic_ccc congeni_genetic_ccc malignancy_ccc neonatal_ccc
+tech_dep_ccc transplant_ccc;”
+On the next line, add a new line: “if first.&idvar then do;
+After line 50 on line 52, add “end;”
+From lines 69 to 765, replace all “=1” with “+1”
+After line 768, add a new line: “if last.&idvar;”
+After line 777, add a new line: “ccc_flag_con = neuromusc_ccc >1 or cvd_ccc >1 or
+respiratory_ccc >1 or renal_ccc >1 or GI_ccc >1 or hemato_immu_ccc >1 or metabolic_ccc
+© 2022 American Medical Association. All rights reserved.
+>1 or congeni_genetic_ccc >1 or malignancy_ccc >1 or neonatal_ccc >1 or tech_dep_ccc >1
+or transplant_ccc >1;”
+To create flags for the 3+ version of CCC-CS, follow all above steps. Then, after line 777, add
+the following 2 lines:
+- ccc_flag_3plus = (neuromusc_ccc >1 + respiratory_ccc >1 + renal_ccc >1 + GI_ccc >1 +
+hemato_immu_ccc >1 + metabolic_ccc >1 + congeni_genetic_ccc >1 + malignancy_ccc
+>1 + neonatal_ccc >1) > 2;
+- if tech_dep_ccc>1 then ccc_flag_3plus
